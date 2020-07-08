@@ -7,6 +7,8 @@ package it.polito.tdp.crimes;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.crimes.model.Distretto;
+import it.polito.tdp.crimes.model.InfoArco;
 import it.polito.tdp.crimes.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -25,13 +27,13 @@ public class FXMLController {
     private URL location;
 
     @FXML // fx:id="boxAnno"
-    private ComboBox<?> boxAnno; // Value injected by FXMLLoader
+    private ComboBox<Integer> boxAnno; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxMese"
-    private ComboBox<?> boxMese; // Value injected by FXMLLoader
+    private ComboBox<Integer> boxMese; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxGiorno"
-    private ComboBox<?> boxGiorno; // Value injected by FXMLLoader
+    private ComboBox<Integer> boxGiorno; // Value injected by FXMLLoader
 
     @FXML // fx:id="btnCreaReteCittadina"
     private Button btnCreaReteCittadina; // Value injected by FXMLLoader
@@ -47,11 +49,32 @@ public class FXMLController {
 
     @FXML
     void doCreaReteCittadina(ActionEvent event) {
-
+    	txtResult.clear();
+    	
+    	Integer anno = boxAnno.getValue();
+    	
+    	if(anno == null) {
+    		txtResult.appendText("Errore, seleziona un anno");
+    		return;
+    	}
+    	
+    	model.creaGrafo(anno);
+    	
+    	for(Distretto d: model.getVertexSet()) {
+    		txtResult.appendText(String.format("Distretto: %d\n", d.getDistrict_id()));
+    		for(InfoArco ia: model.getArchi(d)) {
+    			txtResult.appendText(String.format("Distretto: %d, Distanza: %f\n", ia.getDistretto().getDistrict_id(), ia.getPeso()));
+    		}
+    	}
+    	
+    	
+    	
     }
 
     @FXML
     void doSimula(ActionEvent event) {
+    	
+    	
 
     }
 
@@ -69,5 +92,7 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	boxAnno.getItems().addAll(model.getAnni());
+    	
     }
 }
